@@ -1,42 +1,43 @@
 package jm.task.core.jdbc.util;
 
 
-import java.sql.*;
+import jm.task.core.jdbc.model.User;
+import org.hibernate.SessionFactory;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.cfg.Environment;
+import org.hibernate.service.ServiceRegistry;
+import java.util.Properties;
 
 public class Util {
-    // реализуйте настройку соеденения с БД
 
-    private final String IP = "localhost";
-    private final String PORT = "3306";
-    protected final String SCHEMA_NAME = "userschema";
-    protected final String TABLE_NAME = "usertable";
+    private final SessionFactory sessionFactory;
 
-    private final String URL = "jdbc:mysql://" + IP + ":" + PORT + "/" + SCHEMA_NAME;
-    private final String USERNAME = "root";
-    private final String PASSWORD = "root";
-
-    private final Connection connection;
-
-    public void closeConnection() {
-        try {
-            if (!connection.isClosed()) {
-                connection.close();
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public Connection getConnection() {
-        return connection;
-    }
+    protected final String TABLE_NAME = "users";
 
     public Util() {
-        try {
-            connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        Properties properties = new Properties();
+        properties.put(Environment.URL, "jdbc:mysql://localhost:3306/userschema");
+        properties.put(Environment.USER, "root");
+        properties.put(Environment.PASS, "root");
+        properties.put(Environment.DIALECT, "org.hibernate.dialect.MySQLDialect");
+        properties.put(Environment.DRIVER, "com.mysql.jdbc.Driver");
+
+
+        Configuration configuration = new Configuration()
+        .setProperties(properties)
+        .addAnnotatedClass(User.class);
+
+        ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
+                .applySettings(configuration.getProperties())
+                .build();
+
+        sessionFactory = configuration.buildSessionFactory(serviceRegistry);
+
+    }
+
+    public SessionFactory getSessionFactory() {
+        return sessionFactory;
     }
 
 }

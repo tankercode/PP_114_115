@@ -36,7 +36,7 @@
           <url-type value="DATABASE" />
           <host value="localhost" />
           <port value="3306" />
-          <database value="katadb" />
+          <database value="userschema" />
           <tns-folder value="" />
           <tns-profile value="" />
           <type value="USER_PASSWORD" />

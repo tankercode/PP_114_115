@@ -1,5 +1,6 @@
 package jm.task.core.jdbc;
 
+import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.service.UserServiceImpl;
 import java.util.Arrays;
 
@@ -8,6 +9,7 @@ public class Main {
 
         UserServiceImpl service = new UserServiceImpl();
 
+        service.dropUsersTable();
         service.createUsersTable();
 
         service.saveUser("Asdf", "Isis", (byte) 1);
@@ -20,7 +22,5 @@ public class Main {
         service.cleanUsersTable();
 
         service.dropUsersTable();
-
-        service.closeConnection();
     }
 }

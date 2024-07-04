@@ -15,13 +15,9 @@ import java.util.Properties;
 
 public class Util {
 
-    private final SessionFactory sessionFactory;
-
     private final String USER_NAME = "root";
     private final String PASSWORD = "root";
     private final String URL = "jdbc:mysql://localhost:3306/userschema";
-
-    protected final String TABLE_NAME = "users";
 
     public Connection getConnection() {
 
@@ -35,7 +31,8 @@ public class Util {
         return connection;
     }
 
-    public Util() {
+    public SessionFactory getSessionFactory() {
+
         Properties properties = new Properties();
         properties.put(Environment.URL, URL);
         properties.put(Environment.USER, USER_NAME);
@@ -43,21 +40,15 @@ public class Util {
         properties.put(Environment.DIALECT, "org.hibernate.dialect.MySQLDialect");
         properties.put(Environment.DRIVER, "com.mysql.jdbc.Driver");
 
-
         Configuration configuration = new Configuration()
-        .setProperties(properties)
-        .addAnnotatedClass(User.class);
+                .setProperties(properties)
+                .addAnnotatedClass(User.class);
 
         ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
                 .applySettings(configuration.getProperties())
                 .build();
 
-        sessionFactory = configuration.buildSessionFactory(serviceRegistry);
-
-    }
-
-    public SessionFactory getSessionFactory() {
-        return sessionFactory;
+        return configuration.buildSessionFactory(serviceRegistry);
     }
 
 }

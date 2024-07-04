@@ -10,22 +10,24 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserDaoJDBCImpl extends Util implements UserDao {
+public class UserDaoJDBCImpl implements UserDao {
 
-    private int tableIndex = 0;
+    private final Util util;
 
-    private String TABLE_NAME = "users";
+    public UserDaoJDBCImpl(Util util) {
+        this.util = util;
+    }
 
     public void createUsersTable() {
         String sqlCreate = "CREATE TABLE IF NOT EXISTS "  +
-                TABLE_NAME +
+                "users" +
                 "(id                int NOT NULL AUTO_INCREMENT, " +
                 "name               VARCHAR(50), " +
                 "lastname           VARCHAR(50), " +
-                "age                int, " +
+                "age                TINYINT, " +
                 "PRIMARY KEY(id))";
 
-        try (Statement stmt = getConnection().createStatement()){
+        try (Statement stmt = util.getConnection().createStatement()){
             stmt.execute(sqlCreate);
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -34,11 +36,10 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
 
     public void dropUsersTable() {
         String sqlDrop = "DROP TABLE IF  EXISTS "  +
-                TABLE_NAME;
+                "users";
 
-        try (Statement stmt = getConnection().createStatement()){
+        try (Statement stmt = util.getConnection().createStatement()){
             stmt.execute(sqlDrop);
-            tableIndex = 0;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -46,14 +47,13 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
 
     public void saveUser(String name, String lastName, byte age) {
         String sqlCreateUser = "INSERT INTO " +
-                TABLE_NAME +
-                " ( Id, Name, LastName, Age) Values (?, ?, ?, ?)";
+                "users" +
+                " ( Name, LastName, Age) Values (?, ?, ?)";
 
-        try (PreparedStatement stmt = getConnection().prepareStatement(sqlCreateUser)){
-            stmt.setInt(1, ++tableIndex);
-            stmt.setString(2, name);
-            stmt.setString(3, lastName);
-            stmt.setByte(4, age);
+        try (PreparedStatement stmt = util.getConnection().prepareStatement(sqlCreateUser)){
+            stmt.setString(1, name);
+            stmt.setString(2, lastName);
+            stmt.setByte(3, age);
 
             stmt.executeUpdate();
 
@@ -66,11 +66,11 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
 
     public void removeUserById(long id) {
         String sqlDeleteUser = "DELETE FROM " +
-                TABLE_NAME +
+                "users" +
                 " WHERE id = " +
                 id;
 
-        try (Statement stmt = getConnection().createStatement()){
+        try (Statement stmt = util.getConnection().createStatement()){
             stmt.execute(sqlDeleteUser);
 
         } catch (SQLException e) {
@@ -81,11 +81,11 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
     public List<User> getAllUsers() {
 
         String sqlGetAllUser = "SELECT * FROM " +
-                TABLE_NAME;
+                "users";
 
         List<User> users = new ArrayList<>();
 
-        try (Statement stmt = getConnection().createStatement()){
+        try (Statement stmt = util.getConnection().createStatement()){
             ResultSet resultSet = stmt.executeQuery(sqlGetAllUser);
             while (resultSet.next()) {
                 users.add(new User(
@@ -104,9 +104,9 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
 
     public void cleanUsersTable() {
         String sqlClear = "TRUNCATE TABLE "  +
-                TABLE_NAME;
+                "users";
 
-        try (Statement stmt = getConnection().createStatement()){
+        try (Statement stmt = util.getConnection().createStatement()){
             stmt.execute(sqlClear);
         } catch (SQLException e) {
             throw new RuntimeException(e);

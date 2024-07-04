@@ -10,9 +10,11 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserDaoJDBCImpl {
+public class UserDaoJDBCImpl extends Util implements UserDao {
 
-    /*private int tableIndex = 0;
+    private int tableIndex = 0;
+
+    private String TABLE_NAME = "users";
 
     public void createUsersTable() {
         String sqlCreate = "CREATE TABLE IF NOT EXISTS "  +
@@ -84,7 +86,7 @@ public class UserDaoJDBCImpl {
         List<User> users = new ArrayList<>();
 
         try (Statement stmt = getConnection().createStatement()){
-            ResultSet resultSet = stmt.executeQuery(sqlDeleteUser);
+            ResultSet resultSet = stmt.executeQuery(sqlGetAllUser);
             while (resultSet.next()) {
                 users.add(new User(
                         resultSet.getString(2),
@@ -109,5 +111,5 @@ public class UserDaoJDBCImpl {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-    }*/
+    }
 }

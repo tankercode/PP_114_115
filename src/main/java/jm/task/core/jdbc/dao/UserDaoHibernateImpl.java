@@ -4,33 +4,34 @@ import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.hibernate.query.Query;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import java.util.List;
 
-public class UserDaoHibernateImpl extends Util implements UserDao {
+public class UserDaoHibernateImpl implements UserDao {
 
-    public UserDaoHibernateImpl() {
+    private final Util util;
 
+    public UserDaoHibernateImpl(Util util) {
+        this.util = util;
     }
 
     @Override
     public void createUsersTable() {
-        try (Session session = getSessionFactory().openSession()) {
+        try (Session session = util.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
 
             String sql = "CREATE TABLE IF NOT EXISTS " +
-                    TABLE_NAME +
+                    "users" +
                     " (id               int NOT NULL AUTO_INCREMENT," +
                     " name              VARCHAR(50)," +
                     " lastname          VARCHAR(50)," +
                     " age               TINYINT," +
                     " PRIMARY KEY(id))";
 
-            Query query = session.createSQLQuery(sql).addEntity(User.class);
-            query.executeUpdate();
+            session.createSQLQuery(sql)
+                    .executeUpdate();
 
             transaction.commit();
         }
@@ -38,14 +39,14 @@ public class UserDaoHibernateImpl extends Util implements UserDao {
 
     @Override
     public void dropUsersTable() {
-        try (Session session = getSessionFactory().openSession()) {
+        try (Session session = util.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
 
             String sql = "DROP TABLE IF  EXISTS "  +
-                    TABLE_NAME;
+                    "users";
 
-            Query query = session.createSQLQuery(sql).addEntity(User.class);
-            query.executeUpdate();
+            session.createSQLQuery(sql)
+                    .executeUpdate();
 
             transaction.commit();
         }
@@ -53,7 +54,7 @@ public class UserDaoHibernateImpl extends Util implements UserDao {
 
     @Override
     public void saveUser(String name, String lastName, byte age) {
-        try (Session session = getSessionFactory().openSession()) {
+        try (Session session = util.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
 
             session.save(new User(name, lastName, age));
@@ -66,7 +67,7 @@ public class UserDaoHibernateImpl extends Util implements UserDao {
 
     @Override
     public void removeUserById(long id) {
-        try (Session session = getSessionFactory().openSession()) {
+        try (Session session = util.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
 
             User tmp = new User();
@@ -83,12 +84,13 @@ public class UserDaoHibernateImpl extends Util implements UserDao {
 
         List<User> result;
 
-        try (Session session = getSessionFactory().openSession()) {
+        try (Session session = util.getSessionFactory().openSession()) {
             CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
             CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
             criteriaQuery.from(User.class);
 
-            result = session.createQuery(criteriaQuery).getResultList();
+            result = session.createQuery(criteriaQuery)
+                    .getResultList();
         }
 
         return result;
@@ -97,14 +99,14 @@ public class UserDaoHibernateImpl extends Util implements UserDao {
     @Override
     public void cleanUsersTable() {
 
-        try (Session session = getSessionFactory().openSession()) {
+        try (Session session = util.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
 
             String sql = "TRUNCATE TABLE "  +
-                    TABLE_NAME;
+                    "users";
 
-            Query query = session.createSQLQuery(sql);
-            query.executeUpdate();
+            session.createSQLQuery(sql)
+                    .executeUpdate();
 
             transaction.commit();
         }
